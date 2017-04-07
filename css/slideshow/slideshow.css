@@ -5,6 +5,27 @@ html, body {
   padding: 0;
   background: #000;
   overflow: hidden;
+  font-family: arial;
+}
+
+body:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  opacity: 0;
+  color: #fff;
+  font-size: 3em;
+  font-weight: bold;
+  z-index: 2;
+  transition: opacity 2s;
+  transform: translate(-50%, -50%);
+}
+
+body[progress]:after {
+  opacity: 1;
+  content: attr(progress) '%';
 }
 
 .slide {

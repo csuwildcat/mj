@@ -36,12 +36,21 @@
     'legs-crossed-grass.jpg'
   ];
   var imageCount = imagePaths.length;
+  var assetCount = imageCount + 2;
   var skipFrame = fn => requestAnimationFrame(function(){
                           requestAnimationFrame(fn)
                         });
+  
+  document.body.setAttribute('progress', '0');
+  function updateProgress(){
+    if (--assetCount > 0) document.body.setAttribute('progress', Math.round(100 / assetCount));
+    else document.body.removeAttribute('progress');
+  };
 
   function kenBurns() {
-    if (index == imageCount) return clearInterval(loop);
+    if (index == imageCount) {
+      return clearInterval(loop);
+    }
     if (last) last.setAttribute('fx', 'out');
     (last = imageElements[index]).setAttribute('fx', 'in')
     index++;
@@ -53,16 +62,18 @@
 
 Promise.all([
 
-  new Promise((resolve, reject) => {
-    document.addEventListener('click', function(){
-      resolve();
-    })
-  }),
+  // new Promise((resolve, reject) => {
+  //   document.addEventListener('click', function(){
+  //     updateProgress();
+  //     resolve();
+  //   })
+  // }),
 
   new Promise((resolve, reject) => {
     song = new Audio('audio/see-you-again.mp3');
     song.preload = 'auto';
     song.oncanplay = function(){
+      updateProgress();
       resolve();
     }
   }),
@@ -74,6 +85,7 @@ Promise.all([
       var img = document.createElement('img');
           img.onerror = function(){ reject(); }
           img.onload = function(){
+            updateProgress();
             if (img.width > img.height) {
               wrap.setAttribute('shape', 'wide');
             }
@@ -90,6 +102,7 @@ Promise.all([
   }))
 
 ]).then(response => {
+  updateProgress();
   document.body.appendChild(frag);
   skipFrame(kenBurns);
   loop = setInterval(kenBurns, 8500);
