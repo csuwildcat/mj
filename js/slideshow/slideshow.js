@@ -37,9 +37,11 @@
   ];
   var imageCount = imagePaths.length;
   var assetCount = imageCount + 2;
-  var skipFrame = fn => requestAnimationFrame(function(){
-                          requestAnimationFrame(fn)
-                        });
+  var skipFrame = function(fn){
+    return requestAnimationFrame(function(){
+      requestAnimationFrame(fn)
+    });
+  }
   
   document.body.setAttribute('progress', '0');
   function updateProgress(){
@@ -62,14 +64,14 @@
 
 Promise.all([
 
-  // new Promise((resolve, reject) => {
+  // new Promise(function(resolve, reject) {
   //   document.addEventListener('click', function(){
   //     updateProgress();
   //     resolve();
   //   })
   // }),
 
-  new Promise((resolve, reject) => {
+  new Promise(function(resolve, reject) {
     song = new Audio('audio/see-you-again.mp3');
     song.preload = 'auto';
     song.oncanplay = function(){
@@ -79,7 +81,7 @@ Promise.all([
   }),
 
   Promise.all(imagePaths.map(function(url){
-    return new Promise((resolve, reject) => {
+    return new Promise(function(resolve, reject) {
       var wrap = document.createElement('div');
           wrap.classList.add('slide');
       var img = document.createElement('img');
@@ -101,14 +103,14 @@ Promise.all([
     });
   }))
 
-]).then(response => {
+]).then(function(response) {
   updateProgress();
   document.body.appendChild(frag);
   skipFrame(kenBurns);
   loop = setInterval(kenBurns, 8500);
   song.play();
-}).catch(error => {
-  alert(error);
+}).catch(function(error) {
+  alert("There was a problem in loading the assets");
 })
 
 })();
