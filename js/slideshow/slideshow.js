@@ -1,6 +1,7 @@
 
 (function(){
   
+  var clicked;
   var last;
   var song;
   var loop;
@@ -28,11 +29,11 @@
     'seahawk-blanket.jpg',
     'couch-with-shark.jpg',
     'syd-laying-head.jpg',
-    'deck-with-syd.jpg', 
-    'legs-crossed-grass.jpg',
+    'couch-with-syd.jpg',
+    'deck-with-syd.jpg',
     'grass-with-cassie.jpg',
     'syd-hug-park.jpg',
-    'couch-with-syd.jpg'
+    'legs-crossed-grass.jpg'
   ];
   var imageCount = imagePaths.length;
   var skipFrame = fn => requestAnimationFrame(function(){
@@ -40,7 +41,7 @@
                         });
 
   function kenBurns() {
-    if (index == imageCount) clearInterval(loop);
+    if (index == imageCount) return clearInterval(loop);
     if (last) last.setAttribute('fx', 'out');
     (last = imageElements[index]).setAttribute('fx', 'in')
     index++;
@@ -53,7 +54,13 @@
 Promise.all([
 
   new Promise((resolve, reject) => {
-    song = new Audio('../../audio/see-you-again.mp3');
+    document.addEventListener('click', function(){
+      resolve();
+    })
+  }),
+
+  new Promise((resolve, reject) => {
+    song = new Audio('audio/see-you-again.mp3');
     song.preload = 'auto';
     song.oncanplay = function(){
       resolve();
@@ -75,7 +82,7 @@ Promise.all([
             }
             resolve();
           }
-          img.src = '../../images/slideshow/' + url;
+          img.src = 'images/slideshow/' + url;
       wrap.appendChild(img);    
       frag.appendChild(wrap);
       imageElements.push(wrap);
@@ -85,8 +92,8 @@ Promise.all([
 ]).then(response => {
   document.body.appendChild(frag);
   skipFrame(kenBurns);
-  loop = setInterval(kenBurns, 8000);
-  //song.play();
+  loop = setInterval(kenBurns, 8500);
+  song.play();
 }).catch(error => {
   alert(error);
 })
