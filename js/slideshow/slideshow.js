@@ -43,7 +43,7 @@
     });
   }
   
-  document.body.setAttribute('progress', '0');
+  document.body.setAttribute('progress', 'start');
   function updateProgress(){
     if (--assetCount > 0) document.body.setAttribute('progress', Math.round(100 / assetCount));
     else document.body.removeAttribute('progress');
@@ -62,55 +62,60 @@
     if (e.target.getAttribute('fx') == 'out') e.target.removeAttribute('fx');
   });
 
-Promise.all([
+var listener = document.addEventListener('click', function(){
 
-  // new Promise(function(resolve, reject) {
-  //   document.addEventListener('click', function(){
-  //     updateProgress();
-  //     resolve();
-  //   })
-  // }),
+  Promise.all([
 
-  new Promise(function(resolve, reject) {
-    song = new Audio('audio/see-you-again.mp3');
-    song.preload = 'auto';
-    song.oncanplay = function(){
-      updateProgress();
-      resolve();
-    }
-  }),
+    // new Promise(function(resolve, reject) {
+    //   document.addEventListener('click', function(){
+    //     updateProgress();
+    //     resolve();
+    //   })
+    // }),
 
-  Promise.all(imagePaths.map(function(url){
-    return new Promise(function(resolve, reject) {
-      var wrap = document.createElement('div');
-          wrap.classList.add('slide');
-      var img = document.createElement('img');
-          img.onerror = function(){ reject(); }
-          img.onload = function(){
-            updateProgress();
-            if (img.width > img.height) {
-              wrap.setAttribute('shape', 'wide');
+    new Promise(function(resolve, reject) {
+      song = new Audio('audio/see-you-again.mp3');
+      song.preload = 'auto';
+      song.oncanplay = function(){
+        updateProgress();
+        resolve();
+      }
+    }),
+
+    Promise.all(imagePaths.map(function(url){
+      return new Promise(function(resolve, reject) {
+        var wrap = document.createElement('div');
+            wrap.classList.add('slide');
+        var img = document.createElement('img');
+            img.onerror = function(){ reject(); }
+            img.onload = function(){
+              updateProgress();
+              if (img.width > img.height) {
+                wrap.setAttribute('shape', 'wide');
+              }
+              else if (img.height > img.width) {
+                wrap.setAttribute('shape', 'tall');
+              }
+              resolve();
             }
-            else if (img.height > img.width) {
-              wrap.setAttribute('shape', 'tall');
-            }
-            resolve();
-          }
-          img.src = 'images/slideshow/' + url;
-      wrap.appendChild(img);    
-      frag.appendChild(wrap);
-      imageElements.push(wrap);
-    });
-  }))
+            img.src = 'images/slideshow/' + url;
+        wrap.appendChild(img);    
+        frag.appendChild(wrap);
+        imageElements.push(wrap);
+      });
+    }))
 
-]).then(function(response) {
-  updateProgress();
-  document.body.appendChild(frag);
-  skipFrame(kenBurns);
-  loop = setInterval(kenBurns, 8500);
-  song.play();
-}).catch(function(error) {
-  alert("There was a problem in loading the assets");
-})
+  ]).then(function(response) {
+    updateProgress();
+    document.body.appendChild(frag);
+    skipFrame(kenBurns);
+    loop = setInterval(kenBurns, 8500);
+    song.play();
+  }).catch(function(error) {
+    alert("There was a problem in loading the assets");
+  })
+
+  document.removeEventListener('click', listener);
+});
 
 })();

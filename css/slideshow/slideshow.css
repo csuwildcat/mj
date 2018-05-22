@@ -28,6 +28,11 @@ body[progress]:after {
   content: attr(progress) '%';
 }
 
+body[progress="start"]:after {
+  opacity: 1;
+  content: "Click to Start";
+}
+
 .slide {
   display: flex;
   align-items: center;
